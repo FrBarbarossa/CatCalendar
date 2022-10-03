@@ -24,7 +24,7 @@ images = ["img/Angry.jpg",
           "img/Playing.jpg",
           "img/Sport.jpg"]
 
-bot = Bot(token="5770619873:AAHPUpTapcXd60Ay94nSKiKwbg1q4lHmiBY")
+bot = Bot(token="")
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
