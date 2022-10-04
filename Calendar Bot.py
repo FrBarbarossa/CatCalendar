@@ -24,7 +24,7 @@ images = ["img/Angry.jpg",
           "img/Playing.jpg",
           "img/Sport.jpg"]
 
-bot = Bot(token="TOKEN")
+bot = Bot(token="")
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
@@ -50,11 +50,6 @@ async def process_start_command(message: types.Message):
                            reply_markup=inline_kb)
 
 
-# @dp.message_handler(commands=['help'])
-# async def process_help_command(message: types.Message):
-#     await message.reply("Напиши мне что-нибудь, и я отпрпавлю этот текст тебе в ответ!")
-
-
 @dp.message_handler(commands=['1'], state=States.MENU)
 async def process_command_1(message: types.Message):
     await bot.send_photo(chat_id=message.chat.id, photo=open("img/Angry.jpg", 'rb'), reply_markup=generate_inline_kb(0))
@@ -63,10 +58,6 @@ async def process_command_1(message: types.Message):
 
 @dp.message_handler(commands=['2'], state=None)
 async def process_main_menu(message: types.Message):
-    # state = dp.current_state(user=message.from_user.id)
-    # state.finish()
-    # await state.set_state(States.MENU)
-    # print(await state.get_state())
     await States.MENU.set()
 
     key_cur = types.InlineKeyboardButton('Получить календарь за текущий месяц', callback_data='month_cur')
@@ -81,8 +72,6 @@ async def process_main_menu(message: types.Message):
 
 @dp.callback_query_handler(lambda c: c.data == "started", state=[None, '*'])
 async def process_get_started(callback_query: types.CallbackQuery):
-    # await bot.delete_message(chat_id=callback_query.message.chat.id,
-    #                          message_id=int(callback_query.message.message_id))
     await bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id,
                                         message_id=int(callback_query.message.message_id))
     await States.MENU.set()
@@ -108,9 +97,7 @@ async def process_send_month_calendar(callback_query: types.CallbackQuery):
             if target_month == m:
                 prep_data.append((d, m, i[1]))
     prep_data.sort()
-    # print(prep_data)
     out = fill_calendar(data=prep_data, year=c_year)
-    # out.show()
     await bot.send_photo(chat_id=callback_query.message.chat.id, photo=out)
     await bot.delete_message(chat_id=callback_query.message.chat.id,
                              message_id=int(callback_query.message.message_id))
@@ -154,13 +141,7 @@ async def process_approvment(callback_query: types.CallbackQuery, state: FSMCont
 
 @dp.callback_query_handler(lambda c: c.data == "today", state=States.MENU)
 async def process_today(callback_query: types.CallbackQuery, state: FSMContext):
-    # ru_format_date = reversed(str(datetime.date.today()).split('-'))
-    # ru_format_date = list(map(i.lstrip() for i in ru_format_date))
-    # ru_format_date = list(map(int, ru_format_date))
-    # print(ru_format_date)
     current_date = '/'.join(list(map(str, map(int, reversed(str(datetime.date.today()).split('-'))))))
-    print(current_date, 'ABSFBASBFB')
-    # await state.set_state(States.DATE_CHOSEN)
     await state.update_data(chosen_day=current_date)
     await States.DATE_CHOSEN.set()
 
@@ -171,11 +152,9 @@ async def process_today(callback_query: types.CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(lambda c: c.data == "other_day", state=States.MENU)
 async def process_other_day(callback_query: types.CallbackQuery, state: FSMContext):
-    # await state.set_state(States.DATE_CHOOSE)
     key_menu = types.InlineKeyboardButton('Вернуться в главное меню', callback_data='started')
     inline_kb = types.InlineKeyboardMarkup(row_width=1).add(key_menu)
     await States.DATE_CHOOSE.set()
-    # print(await state.get_state())
 
     await bot.delete_message(chat_id=callback_query.message.chat.id,
                              message_id=int(callback_query.message.message_id))
@@ -186,9 +165,6 @@ async def process_other_day(callback_query: types.CallbackQuery, state: FSMConte
 
 @dp.message_handler(state=States.DATE_CHOOSE)
 async def user_date_checking(message: types.Message, state: FSMContext):
-    # print(message.from_user.id)
-    # state = dp.current_state(user=message.from_user.id)
-    # print(await state.get_state())
     current_date = list(reversed(str(datetime.date.today()).split('-')))
 
     try:
@@ -202,11 +178,9 @@ async def user_date_checking(message: types.Message, state: FSMContext):
         if day not in range(1, month_length + 1):
             raise Exception
         await state.update_data(chosen_day='/'.join([str(day), str(month), str(year)]))
-        # await state.set_state(States.DATE_CHOSEN)
         await States.DATE_CHOSEN.set()
         await process_command_1(message)
     except Exception as ex:
-        # print(ex)
         await bot.send_message(chat_id=message.chat.id,
                                text='Неверный формат даты.\n Введите дату в формате ДД/ММ/ГОД (Прим.:31.08.2021)')
 
