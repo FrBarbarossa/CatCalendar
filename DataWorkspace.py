@@ -12,7 +12,6 @@ conn.commit()
 
 def insert_data(user_id: int, time: str, pic: str) -> bool:
     users_data = list(cur.execute("SELECT datetime FROM users WHERE userid=(?)", (user_id,)))
-    print(users_data)
     if (time,) in users_data:
         del_data(user_id, time)
     cur.execute("INSERT INTO users (userid, datetime,picture) VALUES(?,?,?);", (user_id, time, pic))
@@ -27,5 +26,4 @@ def get_month_data(user_id: int) -> list:
 
 def del_data(user_id: int, time: str) -> None:
     cur.execute("DELETE FROM users WHERE userid=(?) AND datetime=(?)", (user_id, time))
-    print(f'УДАЛЯЮ ДУПЛИКАТ{time}')
     conn.commit()
