@@ -7,5 +7,5 @@ files = [i for i in os.listdir() if i.endswith('jpg')]
 
 for i in files:
     img = Image.open(i)
-    img = img.resize((250, 250), Image.ANTIALIAS)
+    img = img.resize((250, 250),  Image.Resampling.LANCZOS)
     img.save(i)
