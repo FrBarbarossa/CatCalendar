@@ -39,7 +39,8 @@ def draw_calendar_cell() -> None:
                         outline='black')
 
     for i in range(len(DAYS)):
-        x = (IMAGE_SIZE * i + BORDER_THICKNESS * (i)) + IMAGE_SIZE / 2 - FONT.getsize(DAYS[i])[0] // 2
+        x = (IMAGE_SIZE * i + BORDER_THICKNESS * (i)) + IMAGE_SIZE / 2 - FONT.getbbox(DAYS[i])[2] // 2
+        print(FONT.getbbox(DAYS[i]))
         idraw.text((x, HEAD_HIGHT / 2 - 16), text=DAYS[i], font=FONT, fill='black')
 
     img.save('cell.jpg')

@@ -4,10 +4,12 @@ from aiogram.utils import executor
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import datetime
+import os
 from calendar import monthrange
 import DataWorkspace as dw
 from CalendarDrawer import fill_calendar
 
+TOKEN = open('token.txt', 'r').readline()
 
 class States(StatesGroup):
     START = State()
@@ -16,15 +18,10 @@ class States(StatesGroup):
     DATE_CHOSEN = State()
 
 
-images = ["img/Angry.jpg",
-          "img/Busy.jpg",
-          "img/Cinema.jpg",
-          "img/Happy.jpg",
-          "img/Ill.jpg",
-          "img/Playing.jpg",
-          "img/Sport.jpg"]
+images = ['img/'+ i for i in os.listdir('img/') if i.endswith('jpg')]
+images.remove('img/cell.jpg')
 
-bot = Bot(token="")
+bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
